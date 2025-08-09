@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de Cartones de Bingo Argentino</title>
+    <meta name="viewport" content="width=800">
+    <style>
+        :root {
+            --bg-light: #f7f7f7;
+            --bg-dark: #23272f;
+            --card-light: #fff;
+            --card-dark: #2c3440;
+            --border-light: #bbb;
+            --border-dark: #444;
+            --cell-light: #fff;
+            --cell-dark: #23272f;
+            --cell-mark-light: #ffe066;
+            --cell-mark-dark: #ffb700;
+            --text-light: #222;
+            --text-dark: #f7f7f7;
+            --accent: #0077ff;
+            --line-win: #4caf50;
+            --bingo-win: #e91e63;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-light);
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+        header {
+            text-align: center;
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .controls button, .controls select {
+            font-size: 1rem;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            background: var(--card-light);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s, border 0.3s;
+        }
+        body.dark .controls button, body.dark .controls select {
+            background: var(--card-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 60vh;
+        }
+        .bingo-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+            width: 100%;
+            margin-bottom: 32px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .bingo-card {
+            background: var(--card-light);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            width: 720px;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: background 0.3s, border 0.3s;
+        }
+        body.dark .bingo-card {
+            background: var(--card-dark);
+            border: 2px solid var(--border-dark);
+        }
+        .bingo-card .status {
+            position: absolute;
+            top: 50%;
+            right: -140px;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+        .bingo-card .status .line {
+            color: var(--line-win);
+        }
+        .bingo-card .status .bingo {
+            color: var(--bingo-win);
+            font-size: 1.2rem;
+        }
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 80px);
+            grid-template-rows: repeat(3, 80px);
+            gap: 0;
+            width: 720px;
+            height: 240px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: transparent;
+        }
+        .bingo-cell {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: 500;
+            border: 1px solid var(--border-light);
+            background: var(--cell-light);
+            color: var(--text-light);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        body.dark .bingo-cell {
+            background: var(--cell-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
+        }
+        .bingo-cell.marked {
+            background: var(--cell-mark-light);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+        body.dark .bingo-cell.marked {
+            background: var(--cell-mark-dark);
+            color: var(--bingo-win);
+            border: 2px solid var(--bingo-win);
+        }
+        .bingo-cell.empty {
+            background: transparent;
+            border: 1px dashed var(--border-light);
+            cursor: default;
+        }
+        body.dark .bingo-cell.empty {
+            border: 1px dashed var(--border-dark);
+        }
+        /* Responsive */
+        @media (max-width: 800px) {
+            .bingo-card, .bingo-grid {
+                width: 98vw;
+                min-width: 320px;
+                max-width: 99vw;
+                height: auto;
+            }
+            .bingo-grid {
+                grid-template-columns: repeat(9, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+            }
+            .bingo-cell {
+                width: 100%;
+                height: 80px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Generador de Cartones de Bingo Argentino</h1>
+    </header>
+    <section class="controls">
+        <button id="newCardBtn">Nuevo cartón</button>
+        <button id="clearBtn">Limpiar todo</button>
+        <label for="themeSelect" style="display:flex;align-items:center;gap:6px;">
+            Tema:
+            <select id="themeSelect">
+                <option value="light">Claro</option>
+                <option value="dark">Oscuro</option>
+            </select>
+        </label>
+    </section>
+    <main>
+        <div class="bingo-list" id="bingoList"></div>
+    </main>
+    <script>
+        // --- Estado global ---
+        const bingoCards = [];
+
+        // --- Utilidades de generación de cartón ---
+        function generateBingoCard() {
+            // Genera un cartón tradicional argentino: 9x3, 15 números, 5 por fila, rangos por columna
+            const columns = [];
+            for (let c = 0; c < 9; c++) {
+                let min = c === 0 ? 1 : c * 10;
+                let max = c === 8 ? 90 : c * 10 + 9;
+                const nums = [];
+                for (let n = min; n <= max; n++) nums.push(n);
+                columns.push(nums);
+            }
+            const grid = Array.from({length:3},()=>Array(9).fill(null));
+            const usedCols = [[],[],[]];
+            for (let row = 0; row < 3; row++) {
+                let cols = [];
+                while (cols.length < 5) {
+                    let c = Math.floor(Math.random()*9);
+                    if (!cols.includes(c)) cols.push(c);
+                }
+                usedCols[row] = cols;
+            }
+            const usedNumbers = new Set();
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 9; col++) {
+                    if (usedCols[row].includes(col)) {
+                        let available = columns[col].filter(n=>!usedNumbers.has(n));
+                        let num = available[Math.floor(Math.random()*available.length)];
+                        grid[row][col] = num;
+                        usedNumbers.add(num);
+                    }
+                }
+            }
+            return {
+                numbers: grid,
+                marks: Array.from({length:3},()=>Array(9).fill(false)),
+                lineWin: false,
+                bingoWin: false,
+                lineAnnounced: false,
+                bingoAnnounced: false
+            };
+        }
+
+        // --- Detección de línea y bingo ---
+        function checkCardEvents(card) {
+            // Línea: alguna fila con todos los números marcados
+            card.lineWin = false;
+            for (let row = 0; row < 3; row++) {
+                let complete = true;
+                for (let col = 0; col < 9; col++) {
+                    if (card.numbers[row][col] != null && !card.marks[row][col]) {
+                        complete = false;
+                        break;
+                    }
+                }
+                if (complete) {
+                    card.lineWin = true;
+                    break;
+                }
+            }
+            // Bingo: todos los números marcados
+            card.bingoWin = true;
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 9; col++) {
+                    if (card.numbers[row][col] != null && !card.marks[row][col]) {
+                        card.bingoWin = false;
+                        break;
+                    }
+                }
+                if (!card.bingoWin) break;
+            }
+        }
+
+        // --- Renderizado principal ---
+        function renderAll() {
+            const bingoList = document.getElementById('bingoList');
+            bingoList.innerHTML = '';
+            bingoCards.forEach((card, idx) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'bingo-card';
+                cardDiv.style.marginBottom = '32px';
+                cardDiv.style.position = 'relative';
+
+                // Estado a la derecha
+                const status = document.createElement('div');
+                status.className = 'status';
+                if (card.lineWin) {
+                    const line = document.createElement('span');
+                    line.className = 'line';
+                    line.textContent = '¡Línea!';
+                    status.appendChild(line);
+                }
+                if (card.bingoWin) {
+                    const bingo = document.createElement('span');
+                    bingo.className = 'bingo';
+                    bingo.textContent = '¡Bingo!';
+                    status.appendChild(bingo);
+                }
+                cardDiv.appendChild(status);
+
+                // Grid
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'bingo-grid';
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'bingo-cell';
+                        if (card.numbers[row][col] == null) {
+                            cell.classList.add('empty');
+                            cell.textContent = '';
+                            cell.style.cursor = 'default';
+                        } else {
+                            cell.textContent = card.numbers[row][col];
+                            if (card.marks[row][col]) cell.classList.add('marked');
+                            cell.onclick = () => {
+                                card.marks[row][col] = !card.marks[row][col];
+                                checkCardEvents(card);
+                                renderAll();
+                            };
+                        }
+                        gridDiv.appendChild(cell);
+                    }
+                }
+                cardDiv.appendChild(gridDiv);
+                bingoList.appendChild(cardDiv);
+            });
+        }
+
+        // --- Eventos de botones ---
+        document.getElementById('newCardBtn').onclick = () => {
+            bingoCards.push(generateBingoCard());
+            renderAll();
+        };
+        document.getElementById('clearBtn').onclick = () => {
+            if (confirm('¿Estás seguro de que quieres limpiar todos los cartones?')) {
+                bingoCards.length = 0;
+                bingoCards.push(generateBingoCard());
+                renderAll();
+            }
+        };
+        document.getElementById('themeSelect').onchange = (e) => {
+            if (e.target.value === 'dark') {
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+            }
+        };
+
+        // --- Inicialización ---
+        (function init() {
+            bingoCards.push(generateBingoCard());
+            renderAll();
+        })();
+    </script>
+</body>
+</html>
