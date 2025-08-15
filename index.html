@@ -205,6 +205,28 @@
         // --- Estado global ---
         const bingoCards = [];
 
+        // --- Local Storage Handler ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load theme
+            const savedTheme = localStorage.getItem('bingoTheme');
+            if (savedTheme) {
+                document.getElementById('themeSelect').value = savedTheme;
+                if (savedTheme === 'dark') document.body.classList.add('dark');
+            }
+            
+            // Load cards
+            const savedCards = localStorage.getItem('bingoCards');
+            if (savedCards) {
+                bingoCards.push(...JSON.parse(savedCards));
+                renderAll();
+            }
+        });
+
+        // Save state on changes
+        const saveState = () => {
+            localStorage.setItem('bingoCards', JSON.stringify(bingoCards));
+        };
+
         // --- Utilidades de generación de cartón ---
         function generateBingoCard() {
             // Genera un cartón tradicional argentino: 9x3, 15 números, 5 por fila, rangos por columna
@@ -311,17 +333,19 @@
                     for (let col = 0; col < 9; col++) {
                         const cell = document.createElement('div');
                         cell.className = 'bingo-cell';
-                        if (card.numbers[row][col] == null) {
-                            cell.classList.add('empty');
-                            cell.textContent = '';
-                            cell.style.cursor = 'default';
+                        const num = card.numbers[row][col];
+                        if (num === null) {
+                            cell.className += ' empty';
                         } else {
-                            cell.textContent = card.numbers[row][col];
-                            if (card.marks[row][col]) cell.classList.add('marked');
+                            cell.textContent = num;
+                            if (card.marks[row][col]) {
+                                cell.className += ' marked';
+                            }
                             cell.onclick = () => {
                                 card.marks[row][col] = !card.marks[row][col];
                                 checkCardEvents(card);
                                 renderAll();
+                                saveState();
                             };
                         }
                         gridDiv.appendChild(cell);
@@ -332,16 +356,17 @@
             });
         }
 
-        // --- Eventos de botones ---
+        // --- Event Handlers ---
         document.getElementById('newCardBtn').onclick = () => {
             bingoCards.push(generateBingoCard());
             renderAll();
+            saveState();
         };
         document.getElementById('clearBtn').onclick = () => {
             if (confirm('¿Estás seguro de que quieres limpiar todos los cartones?')) {
                 bingoCards.length = 0;
-                bingoCards.push(generateBingoCard());
                 renderAll();
+                saveState();
             }
         };
         document.getElementById('themeSelect').onchange = (e) => {
@@ -350,11 +375,11 @@
             } else {
                 document.body.classList.remove('dark');
             }
+            localStorage.setItem('bingoTheme', e.target.value);
         };
 
         // --- Inicialización ---
         (function init() {
-            bingoCards.push(generateBingoCard());
             renderAll();
         })();
     </script>
