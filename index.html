@@ -41,12 +41,12 @@
         .controls {
             display: flex;
             justify-content: center;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 40px;
+            margin-bottom: 50px;
             flex-wrap: wrap;
         }
         .controls button, .controls select {
-            font-size: 1rem;
+            font-size: 1.3rem;
             padding: 8px 18px;
             border-radius: 6px;
             border: 1px solid var(--border-light);
@@ -126,14 +126,14 @@
             background: transparent;
         }
         .bingo-cell {
-            width: 80px;
-            height: 80px;
+            width: 78px;
+            height: 78px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.7rem;
+            font-size: 2.1rem;
             font-weight: 500;
-            border: 1px solid var(--border-light);
+            border: 2px solid var(--border-light);
             background: var(--cell-light);
             color: var(--text-light);
             cursor: pointer;
@@ -143,25 +143,25 @@
         body.dark .bingo-cell {
             background: var(--cell-dark);
             color: var(--text-dark);
-            border: 1px solid var(--border-dark);
+            border: 2px solid var(--border-dark);
         }
         .bingo-cell.marked {
             background: var(--cell-mark-light);
             color: var(--accent);
-            border: 2px solid var(--accent);
+            border:1px solid var(--accent);
         }
         body.dark .bingo-cell.marked {
             background: var(--cell-mark-dark);
             color: var(--bingo-win);
-            border: 2px solid var(--bingo-win);
+            border: 1px solid var(--bingo-win);
         }
         .bingo-cell.empty {
             background: transparent;
-            border: 1px dashed var(--border-light);
+            border: 2px dashed var(--border-light);
             cursor: default;
         }
         body.dark .bingo-cell.empty {
-            border: 1px dashed var(--border-dark);
+            border: 2px dashed var(--border-dark);
         }
         /* Responsive */
         @media (max-width: 800px) {
@@ -185,11 +185,11 @@
 </head>
 <body>
     <header>
-        <h1>Generador de Cartones de Bingo Argentino</h1>
+        <h1>Generador de cartones de Bingo Argentino</h1>
     </header>
     <section class="controls">
         <button id="newCardBtn">Nuevo cartón</button>
-        <button id="clearBtn">Limpiar todo</button>
+        <button id="clearBtn">Borrar todo</button>
         <label for="themeSelect" style="display:flex;align-items:center;gap:6px;">
             Tema:
             <select id="themeSelect">
@@ -363,10 +363,12 @@
             saveState();
         };
         document.getElementById('clearBtn').onclick = () => {
-            if (confirm('¿Estás seguro de que quieres limpiar todos los cartones?')) {
-                bingoCards.length = 0;
-                renderAll();
-                saveState();
+            if (bingoCards.length > 0) {
+                if (confirm('¿Estás seguro de que querés borrar todos los cartones?')) {
+                    bingoCards.length = 0;
+                    renderAll();
+                    saveState();
+                }
             }
         };
         document.getElementById('themeSelect').onchange = (e) => {
