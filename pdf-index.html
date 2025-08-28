@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PDF Viewer</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    .wrap { height: 100vh; width: 100vw; }
+    .fallback { padding: 1rem; font-family: system-ui, sans-serif; }
+    iframe, object, embed { border: 0; height: 100%; width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Use one of these. The iframe version is simplest and widely supported. -->
+    <iframe
+      src="assets/my-document.pdf#view=FitH"
+      title="PDF"
+      loading="eager"
+    ></iframe>
+
+    <!-- Optional: a visible fallback link for browsers that block inline PDFs (some iOS setups) -->
+    <div class="fallback">
+      If the PDF doesn’t appear, <a href="assets/my-document.pdf">click here to open it</a>.
+    </div>
+  </div>
+</body>
+</html>
