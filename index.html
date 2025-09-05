@@ -5,26 +5,46 @@
     <title>Generador de Cartones de Bingo Argentino</title>
     <meta name="viewport" content="width=800">
     <style>
+        @font-face {
+            font-family: 'Nunito';
+            font-weight: 400;
+            src: url('Nunito-Regular.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Nunito';
+            font-weight: 600;
+            src: url('Nunito-SemiBold.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Nunito';
+            font-weight: 700;
+            src: url('Nunito-Bold.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Nunito';
+            font-weight: 800;
+            src: url('Nunito-ExtraBold.ttf') format('truetype');
+        }
         :root {
-            --bg-light: #f7f7f7;
-            --bg-dark: #23272f;
+            --bg-light: #e6f3ff;
+            --bg-dark: #1a365d;
             --card-light: #fff;
             --card-dark: #2c3440;
-            --border-light: #bbb;
+            --border-light: #ddd;
             --border-dark: #444;
             --cell-light: #fff;
             --cell-dark: #23272f;
-            --cell-mark-light: #ffe066;
-            --cell-mark-dark: #ffb700;
-            --text-light: #222;
-            --text-dark: #f7f7f7;
-            --accent: #0077ff;
+            --cell-mark-light: #fff3cd;
+            --cell-mark-dark: #d4a017;
+            --text-light: #1a365d;
+            --text-dark: #e6f3ff;
+            --accent: #1a365d;
             --line-win: #4caf50;
             --bingo-win: #e91e63;
         }
         body {
             margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
             background: var(--bg-light);
             color: var(--text-light);
             transition: background 0.3s, color 0.3s;
@@ -35,8 +55,19 @@
         }
         header {
             text-align: center;
-            margin-top: 32px;
-            margin-bottom: 16px;
+            margin-top: 40px;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin: 0;
+            line-height: 1.2;
+        }
+        body.dark header h1 {
+            color: var(--text-dark);
         }
         .controls {
             display: flex;
@@ -45,20 +76,77 @@
             margin-bottom: 50px;
             flex-wrap: wrap;
         }
-        .controls button, .controls select {
-            font-size: 1.3rem;
-            padding: 8px 18px;
-            border-radius: 6px;
-            border: 1px solid var(--border-light);
-            background: var(--card-light);
-            color: var(--text-light);
+        .controls button {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: 1px solid transparent;
+            background: #fff;
+            color: var(--accent);
             cursor: pointer;
-            transition: background 0.3s, color 0.3s, border 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
         }
-        body.dark .controls button, body.dark .controls select {
+        .controls button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.25);
+        }
+        body.dark .controls button {
             background: var(--card-dark);
             color: var(--text-dark);
             border: 1px solid var(--border-dark);
+        }
+        
+        /* Toggle Switch Styles */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            color: var(--accent);
+            min-width: 100px;
+        }
+        .toggle-container span {
+            min-width: 50px;
+            text-align: center;
+        }
+        body.dark .toggle-container {
+            color: var(--text-dark);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+        body.dark .toggle-switch {
+            background: #ccc;
+        }
+        body.dark .toggle-switch.active {
+            background: var(--text-dark);
+        }
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
         }
         main {
             display: flex;
@@ -77,10 +165,10 @@
             overflow-y: auto;
         }
         .bingo-card {
-            background: var(--card-light);
-            border: 2px solid var(--border-light);
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            background: #fff;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
             width: 720px;
             height: 240px;
             display: flex;
@@ -88,7 +176,7 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            transition: background 0.3s, border 0.3s;
+            transition: all 0.3s ease;
         }
         body.dark .bingo-card {
             background: var(--card-dark);
@@ -108,11 +196,17 @@
             gap: 2px;
         }
         .bingo-card .status .line {
-            color: var(--line-win);
+            color: var(--accent);
         }
         .bingo-card .status .bingo {
-            color: var(--bingo-win);
+            color: var(--accent);
             font-size: 1.2rem;
+        }
+        body.dark .bingo-card .status .line {
+            color: var(--text-dark);
+        }
+        body.dark .bingo-card .status .bingo {
+            color: var(--text-dark);
         }
         .bingo-grid {
             display: grid;
@@ -121,7 +215,7 @@
             gap: 0;
             width: 720px;
             height: 240px;
-            border-radius: 8px;
+            border-radius: 20px;
             overflow: hidden;
             background: transparent;
         }
@@ -131,37 +225,38 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Nunito', sans-serif;
             font-size: 2.1rem;
-            font-weight: 500;
-            border: 2px solid var(--border-light);
-            background: var(--cell-light);
-            color: var(--text-light);
+            font-weight: 600;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: var(--accent);
             cursor: pointer;
             user-select: none;
-            transition: background 0.2s, color 0.2s, border 0.2s;
+            transition: all 0.2s ease;
         }
         body.dark .bingo-cell {
             background: var(--cell-dark);
             color: var(--text-dark);
-            border: 2px solid var(--border-dark);
+            border: 1px solid var(--border-dark);
         }
         .bingo-cell.marked {
-            background: var(--cell-mark-light);
+            background: #fff3cd;
             color: var(--accent);
-            border:1px solid var(--accent);
+            border: 1px solid #ddd;
         }
         body.dark .bingo-cell.marked {
-            background: var(--cell-mark-dark);
-            color: var(--bingo-win);
-            border: 1px solid var(--bingo-win);
+            background: #fff3cd;
+            color: var(--cell-dark);
+            border: 1px solid var(--border-dark);
         }
         .bingo-cell.empty {
             background: transparent;
-            border: 2px dashed var(--border-light);
+            border: 1px solid #ddd;
             cursor: default;
         }
         body.dark .bingo-cell.empty {
-            border: 2px dashed var(--border-dark);
+            border: 1px solid var(--border-dark);
         }
         /* Responsive */
         @media (max-width: 800px) {
@@ -190,13 +285,12 @@
     <section class="controls">
         <button id="newCardBtn">Nuevo cartón</button>
         <button id="clearBtn">Borrar todo</button>
-        <label for="themeSelect" style="display:flex;align-items:center;gap:6px;">
-            Tema:
-            <select id="themeSelect">
-                <option value="light">Claro</option>
-                <option value="dark">Oscuro</option>
-            </select>
-        </label>
+        <div class="toggle-container">
+            <div class="toggle-switch" id="themeToggle">
+                <div class="toggle-slider"></div>
+            </div>
+            <span id="themeLabel">Claro</span>
+        </div>
     </section>
     <main>
         <div class="bingo-list" id="bingoList"></div>
@@ -210,8 +304,11 @@
             // Load theme
             const savedTheme = localStorage.getItem('bingoTheme');
             if (savedTheme) {
-                document.getElementById('themeSelect').value = savedTheme;
-                if (savedTheme === 'dark') document.body.classList.add('dark');
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark');
+                    document.getElementById('themeToggle').classList.add('active');
+                    document.getElementById('themeLabel').textContent = 'Oscuro';
+                }
             }
             
             // Load cards
@@ -371,13 +468,23 @@
                 }
             }
         };
-        document.getElementById('themeSelect').onchange = (e) => {
-            if (e.target.value === 'dark') {
-                document.body.classList.add('dark');
-            } else {
+        document.getElementById('themeToggle').onclick = () => {
+            const toggle = document.getElementById('themeToggle');
+            const label = document.getElementById('themeLabel');
+            
+            if (toggle.classList.contains('active')) {
+                // Switch to light mode
+                toggle.classList.remove('active');
                 document.body.classList.remove('dark');
+                label.textContent = 'Claro';
+                localStorage.setItem('bingoTheme', 'light');
+            } else {
+                // Switch to dark mode
+                toggle.classList.add('active');
+                document.body.classList.add('dark');
+                label.textContent = 'Oscuro';
+                localStorage.setItem('bingoTheme', 'dark');
             }
-            localStorage.setItem('bingoTheme', e.target.value);
         };
 
         // --- Inicialización ---
