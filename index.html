@@ -356,6 +356,35 @@
                     }
                 }
             }
+            
+            // Sort numbers in each column from top to bottom, preserving empty cells
+            for (let col = 0; col < 9; col++) {
+                // Extract non-null numbers from this column
+                const columnNumbers = [];
+                const nullPositions = [];
+                
+                for (let row = 0; row < 3; row++) {
+                    if (grid[row][col] === null) {
+                        nullPositions.push(row);
+                    } else {
+                        columnNumbers.push(grid[row][col]);
+                    }
+                }
+                
+                // Sort the numbers in ascending order
+                columnNumbers.sort((a, b) => a - b);
+                
+                // Reconstruct the column with sorted numbers and nulls in their original positions
+                let numIndex = 0;
+                for (let row = 0; row < 3; row++) {
+                    if (nullPositions.includes(row)) {
+                        grid[row][col] = null;
+                    } else {
+                        grid[row][col] = columnNumbers[numIndex++];
+                    }
+                }
+            }
+            
             return {
                 numbers: grid,
                 marks: Array.from({length:3},()=>Array(9).fill(false)),
