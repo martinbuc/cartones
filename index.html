@@ -155,7 +155,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 60vh;
+            padding-bottom: 32px;
         }
         .bingo-list {
             display: flex;
@@ -163,9 +163,7 @@
             align-items: center;
             gap: 32px;
             width: 100%;
-            margin-bottom: 32px;
-            max-height: 80vh;
-            overflow-y: auto;
+
         }
         .bingo-card {
             background: #fff;
@@ -244,7 +242,7 @@
             border: 1px solid var(--border-dark);
         }
         .bingo-cell.marked {
-            background: #fff3cd;
+            background: #fde9a9;
             color: var(--accent);
             border: 1px solid #ddd;
         }
@@ -491,15 +489,42 @@
             renderAll();
             saveState();
         };
+        
+        // Clear button state management
+        let clearButtonState = 'normal'; // 'normal' or 'confirm'
+        
         document.getElementById('clearBtn').onclick = () => {
-            if (bingoCards.length > 0) {
-                if (confirm('¿Estás seguro de que querés borrar todos los cartones?')) {
+            if (clearButtonState === 'normal') {
+                // First click: change to confirmation state
+                clearButtonState = 'confirm';
+                document.getElementById('clearBtn').textContent = 'Borrar!';
+                document.getElementById('clearBtn').style.background = '#ff4444';
+                document.getElementById('clearBtn').style.color = 'white';
+            } else {
+                // Second click: execute clear
+                if (bingoCards.length > 0) {
                     bingoCards.length = 0;
                     renderAll();
                     saveState();
                 }
+                resetClearButton();
             }
         };
+        
+        // Function to reset clear button to normal state
+        function resetClearButton() {
+            clearButtonState = 'normal';
+            document.getElementById('clearBtn').textContent = 'Borrar todo';
+            document.getElementById('clearBtn').style.background = '';
+            document.getElementById('clearBtn').style.color = '';
+        }
+        
+        // Click anywhere to cancel confirmation
+        document.addEventListener('click', (event) => {
+            if (clearButtonState === 'confirm' && event.target.id !== 'clearBtn') {
+                resetClearButton();
+            }
+        });
         document.getElementById('themeToggle').onclick = () => {
             const toggle = document.getElementById('themeToggle');
             const label = document.getElementById('themeLabel');
