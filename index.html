@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Cartones de Bingo Argentino</title>
+    <title>Cartones cheBingo</title>
     <meta name="viewport" content="width=800">
     <style>
         @font-face {
@@ -64,6 +64,32 @@
         body.dark {
             background: var(--bg-dark);
             color: var(--text-dark);
+        }
+        .ig-link {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 30;
+            color: var(--text-light);
+            line-height: 0;
+            padding: 0.4rem;
+            border-radius: 10px;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+        body.dark .ig-link {
+            color: var(--text-dark);
+        }
+        .ig-link:hover {
+            color: var(--accent);
+        }
+        .ig-link:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+        .ig-link svg {
+            width: 26px;
+            height: 26px;
+            display: block;
         }
         header {
             text-align: center;
@@ -294,6 +320,13 @@
     </style>
 </head>
 <body>
+    <a class="ig-link" href="https://www.instagram.com/che.bingo" target="_blank" rel="noopener noreferrer" aria-label="che.bingo en Instagram" title="Instagram @che.bingo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1.25" fill="currentColor" stroke="none"/>
+        </svg>
+    </a>
     <header>
         <h1>cheBingo</h1>
     </header>
